@@ -29,11 +29,26 @@ const normalizeSchoolName = (name = '') => {
   // Run again to catch triplets like "a e s" -> "ae s" -> "aes"
   processed = processed.replace(/\b([a-z]{1,2})\s+(?=[a-z]{1,2})\b/gi, (match) => match.replace(/\s+/g, ''));
 
+  // Split known stuck-together words and handle aliases
+  processed = processed
+    .replace(/aesagschool/g, 'aes ag school')
+    .replace(/agteachers/g, 'ag teachers')
+    .replace(/agschool/g, 'ag school')
+    .replace(/agprimary/g, 'ag primary')
+    .replace(/davinternational/g, 'dav international')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Alias 'aes' without 'ag' to 'aes ag' to unify the AES school variations
+  if (processed.startsWith('aes') && !processed.includes('ag')) {
+    processed = processed.replace('aes', 'aes ag');
+  }
+
   // 3. Strip Noise Words
   const noiseWords = [
     'high', 'higher', 'primary', 'secondary', 'senior', 'public', 
     'teachers', 'international', 'school', 'vidyalaya', 'vidhyalay', 
-    'academy', 'institute', 'college', 'excellence', 'for excellence'
+    'academy', 'institute', 'college', 'excellence', 'for'
   ];
   
   // Also strip branch names from base
